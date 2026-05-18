@@ -1,0 +1,152 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resume-analyzer",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eaf82691-7da0-4f20-b268-c5b0c15c3988",
+      "name": "Webhook",
+      "webhookId": "122fa154-4aac-43f2-b339-1beef1f2226c"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Parameter 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c0e7a942-a76f-44dd-9ab7-98d0e44ec8f3",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Resume Content:\n{{ $json[\"text\"] }}\n\nAnalyze this resume like an ATS system and HR recruiter.\n\nReturn clean plain text output with proper spacing.\n\nInclude:\n\nATS SCORE:\n- Score out of 100\n\nSUMMARY:\n- 3 line professional summary\n\nTECHNICAL SKILLS:\n- Programming Languages\n- Frameworks\n- Databases\n- Cloud Technologies\n- Tools\n\nSTRENGTHS:\n- Mention strong points\n\nWEAKNESSES:\n- Mention missing skills\n- Mention formatting issues\n- Mention ATS issues\n\nMISSING KEYWORDS:\n- Important missing keywords for software jobs\n\nPROJECT EVALUATION:\n- Evaluate project quality\n- Mention improvements\n\nRESUME IMPROVEMENTS:\n- Give actionable suggestions\n\nSUGGESTED JOB ROLES:\n- Suggest suitable roles\n\nINTERVIEW PREPARATION TIPS:\n- Mention topics to prepare\n\nFINAL HR REVIEW:\n- Short HR opinion on selection chances\n\nIMPORTANT:\nReturn response with proper line breaks.\nDo not return markdown.\nDo not compress into one paragraph.\nReturn response with double line breaks between sections",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1905cf96-8bd5-44a7-9ce1-cac2138badc9",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "1b31416c-01de-4ff7-adaf-62d43140dd80",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uqaFYlpyZnT2ROKr",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "aswaniperugu@gmail.com",
+        "subject": "AI RESUME ANALYIS  RESULT",
+        "message": "<div style=\"font-family: Arial; padding:20px;\">  <h1>AI Resume Analysis Result</h1>  <h2 style=\"color:green;\">ATS Score: 62/100</h2>  <h3>Summary</h3> <p> Strong foundation in Java, Python, AWS and Machine Learning with good analytical skills. </p>  <h3>Suggestions</h3> <ul> <li>Add GitHub links</li> <li>Improve project descriptions</li> <li>Add measurable achievements</li> <li>Improve keyword optimization</li> </ul>  <h3>Missing Keywords</h3> <p> Git, Docker, React.js, REST APIs, Spring Boot </p>  </div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "56efbcc5-15a7-48f3-983d-5b2c2d1878f5",
+      "name": "Send a message",
+      "webhookId": "717961d1-5254-410c-be2d-8fe35dc10a76",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VANqMHNMpU0DmjvK",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "36ca56b6-21e6-4732-bf53-28c429d178b8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "81c887ae6e767261a94bb35f5e6615b056ed3e61c88db5448657d820228f9842"
+  },
+  "id": "kS4oW6C6FAlFKJzr",
+  "tags": []
+}
